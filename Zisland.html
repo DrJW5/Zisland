@@ -3,55 +3,55 @@
 	<head>	
 		<title>Z island</title>
 		<script>
-			var d=0; 										// Is the player dead? (Game Over overlay trigger)
-			var jx=0; 										// ???
-			var jy=0; 										// ???
-			var TheX=0; 									// Position of the current field of view on the overall map from left (0) to right (2)
-			var TheY=0;   									// Position of the current field of view on the overall map from top (0) to bottom (2)
-			var StX=[];  									// ???
-			var StY=[];  									// ???
-			var Lx=[];  									// ???
-			var Ly=[];										// ???
-			var Switch=1; 									// ???
-			var ZOM=3;										// Number of zombies
+			var d=0; 							// Is the player dead? (Game Over overlay trigger)
+			var jx=0; 							// ???
+			var jy=0; 							// ???
+			var TheX=0; 							// Position of the current field of view on the overall map from left (0) to right (2)
+			var TheY=0;   							// Position of the current field of view on the overall map from top (0) to bottom (2)
+			var StX=[];  							// ???
+			var StY=[];  							// ???
+			var Lx=[];  							// ???
+			var Ly=[];							// ???
+			var Switch=1; 							// ???
+			var ZOM=3;							// Number of zombies
 
-			addEventListener("keydown", (key) => {			// Key press events
+			addEventListener("keydown", (key) => {				// Key press events
 				if(key.keyCode == 37 ){left();}				// Left
 				if(key.keyCode == 38 ){up();}				// Up
 				if(key.keyCode == 39 ){right();}			// Right
 				if(key.keyCode == 40 ){down();}				// Down
 			});
 			
-			const minX=10;									// Lower limit for zombies movements on the X axis
-			const maxX=490;									// Upper limit for zombies movements on the X axis
-			const minY=10;									// Lower limit for zombies movements on the Y axis
-			const maxY=290;									// Upper limit for zombies movements on the Y axis
+			const minX=10;							// Lower limit for zombies movements on the X axis
+			const maxX=490;							// Upper limit for zombies movements on the X axis
+			const minY=10;							// Lower limit for zombies movements on the Y axis
+			const maxY=290;							// Upper limit for zombies movements on the Y axis
 
 // Character (0) and Zombies (1 to 6) positions
 var PosX=[];	var PosY=[];	var DirX=[];	var DirY=[];	var Vits=[];
-PosX[0]=60;		PosY[0]=60;		DirX[0]=0;		DirY[0]=0;		Vits[0]=0;
-PosX[1]=200;	PosY[1]=200;	DirX[1]=1;		DirY[1]=1;		Vits[1]=1;
-PosX[2]=200;	PosY[2]=200;	DirX[2]=1;		DirY[2]=1;		Vits[2]=1;
-PosX[3]=200;	PosY[3]=200;	DirX[3]=1;		DirY[3]=1;		Vits[3]=1;
-PosX[4]=200;	PosY[4]=200;	DirX[4]=1;		DirY[4]=1;		Vits[4]=1;
-PosX[5]=200;	PosY[5]=200;	DirX[5]=1;		DirY[5]=1;		Vits[5]=1;
-PosX[6]=200;	PosY[6]=200;	DirX[6]=1;		DirY[6]=1;		Vits[6]=1;
+PosX[0]=60;	PosY[0]=60;	DirX[0]=0;	DirY[0]=0;	Vits[0]=0;
+PosX[1]=200;	PosY[1]=200;	DirX[1]=1;	DirY[1]=1;	Vits[1]=1;
+PosX[2]=200;	PosY[2]=200;	DirX[2]=1;	DirY[2]=1;	Vits[2]=1;
+PosX[3]=200;	PosY[3]=200;	DirX[3]=1;	DirY[3]=1;	Vits[3]=1;
+PosX[4]=200;	PosY[4]=200;	DirX[4]=1;	DirY[4]=1;	Vits[4]=1;
+PosX[5]=200;	PosY[5]=200;	DirX[5]=1;	DirY[5]=1;	Vits[5]=1;
+PosX[6]=200;	PosY[6]=200;	DirX[6]=1;	DirY[6]=1;	Vits[6]=1;
 
 function Rectangle(c,x,y,l,h)				{c.fillRect (x,y,l,h);}
-function Clean(c) 							{c.fillStyle = "white";	c.fillRect (0, 0, 500, 300);}
-function GreenSetup(c) 						{c.fillStyle = "ForestGreen";	c.fillRect (0, 0, 500, 300);}
-function BlueSetup(c) 						{c.fillStyle = "LightSkyBlue";	c.fillRect (0, 0, 500, 300);}
-function YellowSetup(c) 					{c.fillStyle = "Moccasin";		c.fillRect (0, 0, 500, 300);}
-function Cercle(c,x,y,r) 					{c.beginPath();	c.arc(x, y, r, 0, Math.PI*2, true);	c.closePath(); c.fill();}
+function Clean(c) 					{c.fillStyle = "white";	c.fillRect (0, 0, 500, 300);}
+function GreenSetup(c) 					{c.fillStyle = "ForestGreen";	c.fillRect (0, 0, 500, 300);}
+function BlueSetup(c) 					{c.fillStyle = "LightSkyBlue";	c.fillRect (0, 0, 500, 300);}
+function YellowSetup(c) 				{c.fillStyle = "Moccasin";		c.fillRect (0, 0, 500, 300);}
+function Cercle(c,x,y,r) 				{c.beginPath();	c.arc(x, y, r, 0, Math.PI*2, true);	c.closePath(); c.fill();}
 function Trait(c,x1,y1,x2,y2,col) 			{c.beginPath(); c.moveTo(x1,y1);	c.lineTo(x2,y2);  c.strokeStyle = col;	c.stroke();}	
 function DontFuckingTouchMe()				{d=0; for(i=1;i<=ZOM;i++){if(Dist(i,0)<20){d=1;}}	}																// Check distance with each zombie to know if player dies
-function Dist(a,b)							{return Dista=Math.round(Math.sqrt((PosX[a]-PosX[b])*(PosX[a]-PosX[b])+(PosY[a]-PosY[b])*(PosY[a]-PosY[b])));}		// Math function to compute distance between two points
-function up()								{if(CheckColor(PosX[0],PosY[0]-13)!=765){PosY[0]-=2;}}
-function down()								{if(CheckColor(PosX[0],PosY[0]+7)!=765) {PosY[0]+=2;}}
-function left()								{if(CheckColor(PosX[0]-10,PosY[0])!=765){PosX[0]-=2;}}
-function right()							{if(CheckColor(PosX[0]+10,PosY[0])!=765){PosX[0]+=2;}}
-function ReloadZombies()					{for(n=1;n<=ZOM;n++){PosX[n]=200; PosY[n]=200;}}
-function GetInput()							{ZOM=document.getElementById("ZOM").value;}
+function Dist(a,b)					{return Dista=Math.round(Math.sqrt((PosX[a]-PosX[b])*(PosX[a]-PosX[b])+(PosY[a]-PosY[b])*(PosY[a]-PosY[b])));}		// Math function to compute distance between two points
+function up()						{if(CheckColor(PosX[0],PosY[0]-13)!=765){PosY[0]-=2;}}
+function down()						{if(CheckColor(PosX[0],PosY[0]+7)!=765) {PosY[0]+=2;}}
+function left()						{if(CheckColor(PosX[0]-10,PosY[0])!=765){PosX[0]-=2;}}
+function right()					{if(CheckColor(PosX[0]+10,PosY[0])!=765){PosX[0]+=2;}}
+function ReloadZombies()				{for(n=1;n<=ZOM;n++){PosX[n]=200; PosY[n]=200;}}
+function GetInput()					{ZOM=document.getElementById("ZOM").value;}
 function CheckColor(x,y){  
 	var imgd = ctx2.getImageData(x, y, 1, 1);
 	var pix = imgd.data;
