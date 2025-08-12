@@ -4,8 +4,6 @@
 		<title>Z island</title>
 		<script>
 			var d=0;									// Is the player dead? (Game Over overlay trigger)
-			var jx=0;									// ???
-			var jy=0;									// ???
 			var TheX=0;									// Position of the current field of view on the overall map from left (0) to right (2)
 			var TheY=0;									// Position of the current field of view on the overall map from top (0) to bottom (2)
 			var StX=[];									// ???
@@ -83,7 +81,7 @@ ctx1.fillStyle ="grey";  Rectangle(ctx1,0,0,500,50);
 
 ctx1.fillStyle ="orange";
 ctx1.font="2em Helvetica";
-ctx1.fillText("Z island v0.93",10,35);
+ctx1.fillText("Z island v0.94",10,35);
 
 ctx1.fillStyle ="black";   Cercle(ctx1,350,30-7.5,5);	ctx1.lineWidth = 2;	Trait(ctx1,350,30-5,350+10,30+5,"black");	Trait(ctx1,350,30-5,350-10,30+5,"black");	Trait(ctx1,350,30+5,350+5,30+10,"black");	Trait(ctx1,350,30+5,350-5,30+10,"black");	ctx1.lineWidth = 4;		Trait(ctx1,350,30-5,350,30+5,"black");
 ctx1.fillStyle ="red";   Cercle(ctx1,400-4,30-7.5,4);	ctx1.lineWidth = 2;	Trait(ctx1,400-4,30-5,400+10,30-3,"red");	Trait(ctx1,400-4,30-1,400+10,30+1,"red");	Trait(ctx1,400-4,30+3,400-6,30+10,"red");	Trait(ctx1,400-4,30+3,400+0,30+10,"red");	ctx1.lineWidth = 4;		Trait(ctx1,400-4,30-5,400-4,30+3,"red");
@@ -97,54 +95,22 @@ Clean(ctx2);
 
 
 
-if(TheX==0 && TheY==0){
-	YellowSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,500,20);
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);} 
+if(Switch==1){Structures(); Switch=0;}	BuildStructures();												// ????
 
-if(TheX==1 && TheY==0){
-	YellowSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,500,20);}
+if(TheY==0){																							// If field of view is at the top
+	YellowSetup(ctx2);																					// Make background yellow
+	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,500,20);												// Draw the top wall
+}
 
-if(TheX==2 && TheY==0){
-	YellowSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,500,20);
-	ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);}
+if(TheY==1){GreenSetup(ctx2);}																			// If field of view is in the middle, make background green
 
-if(TheX==0 && TheY==1){
-	GreenSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);}
+if(TheY==2){																							// If field of view is at the bottom
+	BlueSetup(ctx2);																					// Make background blue
+	ctx2.fillStyle ="black"; Rectangle(ctx2,0,280,500,20);												// Draw the bottom wall
+}
 
-if(TheX==1 && TheY==1){
-	GreenSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();}
-
-if(TheX==2 && TheY==1){
-	GreenSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);}
-
-if(TheX==0 && TheY==2){
-	BlueSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,280,500,20);}
-
-if(TheX==1 && TheY==2){
-	BlueSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,280,500,20);}
-
-if(TheX==2 && TheY==2){
-	BlueSetup(ctx2);
-	if(Switch==1){Structures(); Switch=0;}	BuildStructures();
-	ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,280,500,20);}
-
+if(TheX==0){ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);}										// If field of view is on the left, draw left wall
+if(TheX==2){ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);}										// If field of view is on the right, draw right wall
 
 
 
