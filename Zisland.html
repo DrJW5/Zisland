@@ -58,7 +58,7 @@ function CheckColor(x,y){
 	   pix[2] = 255 - pix[2]; // blue
 	   return total=pix[0]+pix[1]+pix[2];
 }
-function Structures(){ 
+function Structures(){ 																			// Generate random shelter structures locations
 	for(n=1;n<4;n++){
 	if(Math.random()>0.5){LorL=1;} else{LorL=0;}
 	Long=50;
@@ -67,7 +67,7 @@ function Structures(){
 	if(LorL==1){Lx[n]=Long;}  else{Lx[n]=5;}
 	if(LorL==0){Ly[n]=Long;}  else{Ly[n]=5;}
 }}
-function BuildStructures(){
+function BuildStructures(){																		// Build shelter structures		
 ctx2.fillStyle ="black"; Rectangle(ctx2,StX[1],StY[1],Lx[1],Ly[1]);
 ctx2.fillStyle ="black"; Rectangle(ctx2,StX[2],StY[2],Lx[2],Ly[2]);
 ctx2.fillStyle ="black"; Rectangle(ctx2,StX[3],StY[3],Lx[3],Ly[3]);
@@ -81,7 +81,7 @@ ctx1.fillStyle ="grey";  Rectangle(ctx1,0,0,500,50);
 
 ctx1.fillStyle ="orange";
 ctx1.font="2em Helvetica";
-ctx1.fillText("Z island v0.94",10,35);
+ctx1.fillText("Z island v0.95",10,35);
 
 ctx1.fillStyle ="black";   Cercle(ctx1,350,30-7.5,5);	ctx1.lineWidth = 2;	Trait(ctx1,350,30-5,350+10,30+5,"black");	Trait(ctx1,350,30-5,350-10,30+5,"black");	Trait(ctx1,350,30+5,350+5,30+10,"black");	Trait(ctx1,350,30+5,350-5,30+10,"black");	ctx1.lineWidth = 4;		Trait(ctx1,350,30-5,350,30+5,"black");
 ctx1.fillStyle ="red";   Cercle(ctx1,400-4,30-7.5,4);	ctx1.lineWidth = 2;	Trait(ctx1,400-4,30-5,400+10,30-3,"red");	Trait(ctx1,400-4,30-1,400+10,30+1,"red");	Trait(ctx1,400-4,30+3,400-6,30+10,"red");	Trait(ctx1,400-4,30+3,400+0,30+10,"red");	ctx1.lineWidth = 4;		Trait(ctx1,400-4,30-5,400-4,30+3,"red");
@@ -90,12 +90,8 @@ ctx1.fillStyle ="red";   Cercle(ctx1,400-4,30-7.5,4);	ctx1.lineWidth = 2;	Trait(
 
 
 function drawShape(){  
-ctx2 = document.getElementById('canvas2').getContext('2d');
-Clean(ctx2);
-
-
-
-if(Switch==1){Structures(); Switch=0;}	BuildStructures();												// ????
+ctx2 = document.getElementById('canvas2').getContext('2d');												// Select canvas 
+Clean(ctx2);																							// Clear canvas
 
 if(TheY==0){																							// If field of view is at the top
 	YellowSetup(ctx2);																					// Make background yellow
@@ -112,15 +108,12 @@ if(TheY==2){																							// If field of view is at the bottom
 if(TheX==0){ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);}										// If field of view is on the left, draw left wall
 if(TheX==2){ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);}										// If field of view is on the right, draw right wall
 
+if(Switch==1){Structures(); Switch=0;}	BuildStructures();												// Call function to build shelter structures, and generate new ones if new field of view 
 
-
-
-
-
-if(PosX[0]>480){PosX[0]=30;  TheX++;	ReloadZombies();	Switch=1;}
-if(PosY[0]>280){PosY[0]=30;	 TheY++;	ReloadZombies();	Switch=1;}
-if(PosX[0]<20) {PosX[0]=470; TheX--;	ReloadZombies();	Switch=1;}
-if(PosY[0]<20) {PosY[0]=270; TheY--;	ReloadZombies();	Switch=1;}
+if(PosX[0]>480){PosX[0]=30;  TheX++;	ReloadZombies();	Switch=1;}									// If player goes off-screen to the right, switch field of view, reload zombies, request new shelter structures
+if(PosY[0]>280){PosY[0]=30;	 TheY++;	ReloadZombies();	Switch=1;}									// If player goes off-screen at the bottom, switch field of view, reload zombies, request new shelter structures
+if(PosX[0]<20) {PosX[0]=470; TheX--;	ReloadZombies();	Switch=1;}									// If player goes off-screen to the left, switch field of view, reload zombies, request new shelter structures
+if(PosY[0]<20) {PosY[0]=270; TheY--;	ReloadZombies();	Switch=1;}									// If player goes off-screen at the top, switch field of view, reload zombies, request new shelter structures
 
 	ctx2.fillStyle ="black";   Cercle(ctx2,PosX[0],PosY[0]-7.5,5);
 	ctx2.lineWidth = 2;
