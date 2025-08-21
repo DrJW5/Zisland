@@ -2,160 +2,11 @@
 <html>
 	<head>	
 		<title>Z island</title>
-		<script>
-			var d=0;									// Is the player dead? (Game Over overlay trigger)
-			var TheX=0;									// Position of the current field of view on the overall map from left (0) to right (2)
-			var TheY=0;									// Position of the current field of view on the overall map from top (0) to bottom (2)
-			var StX=[];									// ???
-			var StY=[];  								// ???
-			var Lx=[];									// ???
-			var Ly=[];									// ???
-			var Switch=1;								// ???
-			var ZOM=3;									// Number of zombies
-
-			addEventListener("keydown", (key) => {		// Key press events
-				if(key.keyCode == 37 ){left();}			// Left
-				if(key.keyCode == 38 ){up();}			// Up
-				if(key.keyCode == 39 ){right();}		// Right
-				if(key.keyCode == 40 ){down();}			// Down
-			});
-			
-			const minX=10;								// Lower limit for zombies movements on the X axis
-			const maxX=490;								// Upper limit for zombies movements on the X axis
-			const minY=10;								// Lower limit for zombies movements on the Y axis
-			const maxY=290;								// Upper limit for zombies movements on the Y axis
-
-// Character (0) and Zombies (1 to 6) positions
-var PosX=[];	var PosY=[];	var DirX=[];	var DirY=[];	var Vits=[];
-PosX[0]=60;		PosY[0]=60;		DirX[0]=0;		DirY[0]=0;		Vits[0]=0;
-PosX[1]=200;	PosY[1]=200;	DirX[1]=1;		DirY[1]=1;		Vits[1]=1;
-PosX[2]=200;	PosY[2]=200;	DirX[2]=1;		DirY[2]=1;		Vits[2]=1;
-PosX[3]=200;	PosY[3]=200;	DirX[3]=1;		DirY[3]=1;		Vits[3]=1;
-PosX[4]=200;	PosY[4]=200;	DirX[4]=1;		DirY[4]=1;		Vits[4]=1;
-PosX[5]=200;	PosY[5]=200;	DirX[5]=1;		DirY[5]=1;		Vits[5]=1;
-PosX[6]=200;	PosY[6]=200;	DirX[6]=1;		DirY[6]=1;		Vits[6]=1;
-
-function Rectangle(c,x,y,l,h)				{c.fillRect (x,y,l,h);}
-function Clean(c) 					{c.fillStyle = "white";	c.fillRect (0, 0, 500, 300);}
-function GreenSetup(c) 					{c.fillStyle = "ForestGreen";	c.fillRect (0, 0, 500, 300);}
-function BlueSetup(c) 					{c.fillStyle = "LightSkyBlue";	c.fillRect (0, 0, 500, 300);}
-function YellowSetup(c) 				{c.fillStyle = "Moccasin";		c.fillRect (0, 0, 500, 300);}
-function Cercle(c,x,y,r) 				{c.beginPath();	c.arc(x, y, r, 0, Math.PI*2, true);	c.closePath(); c.fill();}
-function Trait(c,x1,y1,x2,y2,col) 			{c.beginPath(); c.moveTo(x1,y1);	c.lineTo(x2,y2);  c.strokeStyle = col;	c.stroke();}	
-function DontFuckingTouchMe()				{d=0; for(i=1;i<=ZOM;i++){if(Dist(i,0)<20){d=1;}}}															// Check distance with each zombie to know if player dies
-function Dist(a,b)					{return Dista=Math.round(Math.sqrt((PosX[a]-PosX[b])*(PosX[a]-PosX[b])+(PosY[a]-PosY[b])*(PosY[a]-PosY[b])));}		// Math function to compute distance between two points
-function up()						{if(CheckColor(PosX[0],PosY[0]-13)!=765){PosY[0]-=2;}}
-function down()						{if(CheckColor(PosX[0],PosY[0]+7)!=765) {PosY[0]+=2;}}
-function left()						{if(CheckColor(PosX[0]-10,PosY[0])!=765){PosX[0]-=2;}}
-function right()					{if(CheckColor(PosX[0]+10,PosY[0])!=765){PosX[0]+=2;}}
-function ReloadZombies()				{for(n=1;n<=ZOM;n++){PosX[n]=200; PosY[n]=200;}}
-function GetInput()					{ZOM=document.getElementById("ZOM").value;}
-function CheckColor(x,y){  
-	var imgd = ctx2.getImageData(x, y, 1, 1);
-	var pix = imgd.data;
-	   pix[0] = 255 - pix[0]; // red
-	   pix[1] = 255 - pix[1]; // green
-	   pix[2] = 255 - pix[2]; // blue
-	   return total=pix[0]+pix[1]+pix[2];
-}
-function Structures(){ 																			// Generate random shelter structures locations
-	for(n=1;n<4;n++){
-	if(Math.random()>0.5){LorL=1;} else{LorL=0;}
-	Long=50;
-	StX[n]=Math.round(Math.random()*400+50);
-	StY[n]=Math.round(Math.random()*200+50);
-	if(LorL==1){Lx[n]=Long;}  else{Lx[n]=5;}
-	if(LorL==0){Ly[n]=Long;}  else{Ly[n]=5;}
-}}
-function BuildStructures(){																		// Build shelter structures		
-ctx2.fillStyle ="black"; Rectangle(ctx2,StX[1],StY[1],Lx[1],Ly[1]);
-ctx2.fillStyle ="black"; Rectangle(ctx2,StX[2],StY[2],Lx[2],Ly[2]);
-ctx2.fillStyle ="black"; Rectangle(ctx2,StX[3],StY[3],Lx[3],Ly[3]);
-}
-
-
-
-function DrawHead(){
-ctx1 = document.getElementById('canvas1').getContext('2d');
-ctx1.fillStyle ="grey";  Rectangle(ctx1,0,0,500,50);
-
-ctx1.fillStyle ="orange";
-ctx1.font="2em Helvetica";
-ctx1.fillText("Z island v0.95",10,35);
-
-ctx1.fillStyle ="black";   Cercle(ctx1,350,30-7.5,5);	ctx1.lineWidth = 2;	Trait(ctx1,350,30-5,350+10,30+5,"black");	Trait(ctx1,350,30-5,350-10,30+5,"black");	Trait(ctx1,350,30+5,350+5,30+10,"black");	Trait(ctx1,350,30+5,350-5,30+10,"black");	ctx1.lineWidth = 4;		Trait(ctx1,350,30-5,350,30+5,"black");
-ctx1.fillStyle ="red";   Cercle(ctx1,400-4,30-7.5,4);	ctx1.lineWidth = 2;	Trait(ctx1,400-4,30-5,400+10,30-3,"red");	Trait(ctx1,400-4,30-1,400+10,30+1,"red");	Trait(ctx1,400-4,30+3,400-6,30+10,"red");	Trait(ctx1,400-4,30+3,400+0,30+10,"red");	ctx1.lineWidth = 4;		Trait(ctx1,400-4,30-5,400-4,30+3,"red");
-}
-
-
-
-function drawShape(){  
-ctx2 = document.getElementById('canvas2').getContext('2d');												// Select canvas 
-Clean(ctx2);																							// Clear canvas
-
-if(TheY==0){																							// If field of view is at the top
-	YellowSetup(ctx2);																					// Make background yellow
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,500,20);												// Draw the top wall
-}
-
-if(TheY==1){GreenSetup(ctx2);}																			// If field of view is in the middle, make background green
-
-if(TheY==2){																							// If field of view is at the bottom
-	BlueSetup(ctx2);																					// Make background blue
-	ctx2.fillStyle ="black"; Rectangle(ctx2,0,280,500,20);												// Draw the bottom wall
-}
-
-if(TheX==0){ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);}										// If field of view is on the left, draw left wall
-if(TheX==2){ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);}										// If field of view is on the right, draw right wall
-
-if(Switch==1){Structures(); Switch=0;}	BuildStructures();												// Call function to build shelter structures, and generate new ones if new field of view 
-
-if(PosX[0]>480){PosX[0]=30;  TheX++;	ReloadZombies();	Switch=1;}									// If player goes off-screen to the right, switch field of view, reload zombies, request new shelter structures
-if(PosY[0]>280){PosY[0]=30;	 TheY++;	ReloadZombies();	Switch=1;}									// If player goes off-screen at the bottom, switch field of view, reload zombies, request new shelter structures
-if(PosX[0]<20) {PosX[0]=470; TheX--;	ReloadZombies();	Switch=1;}									// If player goes off-screen to the left, switch field of view, reload zombies, request new shelter structures
-if(PosY[0]<20) {PosY[0]=270; TheY--;	ReloadZombies();	Switch=1;}									// If player goes off-screen at the top, switch field of view, reload zombies, request new shelter structures
-
-	ctx2.fillStyle ="black";   Cercle(ctx2,PosX[0],PosY[0]-7.5,5);
-	ctx2.lineWidth = 2;
-	Trait(ctx2,PosX[0],PosY[0]-5,PosX[0]+10,PosY[0]+5,"black");
-	Trait(ctx2,PosX[0],PosY[0]-5,PosX[0]-10,PosY[0]+5,"black");
-	Trait(ctx2,PosX[0],PosY[0]+5,PosX[0]+5,PosY[0]+10,"black");
-	Trait(ctx2,PosX[0],PosY[0]+5,PosX[0]-5,PosY[0]+10,"black");
-	ctx2.lineWidth = 4;
-	Trait(ctx2,PosX[0],PosY[0]-5,PosX[0],PosY[0]+5,"black");
-
-
-			for(i=1;i<=ZOM;i++){ 																		// For each zombie, movement management and drawing
-				if(Math.random()>0.99){DirX[i]=DirX[i]*-1;}												// 1% chance that the zombie changes horizontal direction  
-				if(Math.random()>0.99){DirY[i]=DirY[i]*-1;}												// 1% chance that the zombie changes vertical direction
-				if(PosX[i]>maxX){DirX[i]=-1;} 	if(PosX[i]<minX){DirX[i]=1;} 							// If zombie reaches the right or left of the field of view, change horizontal direction
-				if(PosY[i]>maxY){DirY[i]=-1;} 	if(PosY[i]<minY){DirY[i]=1;}							// If zombie reaches the top or bottom of the field of view, change vertical direction
-				if(CheckColor(PosX[i]+DirX[i]+(DirX[i]*5),PosY[i])!=765){PosX[i]=PosX[i]+DirX[i];}		// Move horizontally, if there is no wall on the way   
-				if(CheckColor(PosX[i],PosY[i]+DirY[i]+(DirY[i]*5))!=765){PosY[i]=PosY[i]+DirY[i];}		// Move vertically, if there is no wall on the way
-				
-				var f=DirX[i];																			// Which side is the zombie facing, important to draw the arms properly
-				ctx2.fillStyle ="red";   Cercle(ctx2,PosX[i]-(4*f),PosY[i]-7.5,4);						// Head
-				ctx2.lineWidth =2;																		// Limbs thickness
-				Trait(ctx2,PosX[i]-(4*f),PosY[i]-5,PosX[i]+(10*f),PosY[i]-3,"red");						// Top arm
-				Trait(ctx2,PosX[i]-(4*f),PosY[i]-1,PosX[i]+(10*f),PosY[i]+1,"red");						// Bottom arm
-				Trait(ctx2,PosX[i]-(4*f),PosY[i]+3,PosX[i]-(6*f),PosY[i]+10,"red");						// Back leg
-				Trait(ctx2,PosX[i]-(4*f),PosY[i]+3,PosX[i]+0,PosY[i]+10,"red");							// Front leg
-				ctx2.lineWidth = 4;	Trait(ctx2,PosX[i]-(4*f),PosY[i]-5,PosX[i]-(4*f),PosY[i]+3,"red");	// Torso
-			}
-
-			DontFuckingTouchMe();																		// Call function to check if the player is touched by a zombie
-			if(d==0) {requestAnimationFrame(drawShape);}												// If not dead, continue the animation
-			else{ctx2.fillStyle="orange"; ctx2.font="5em Helvetica"; ctx2.fillText("GAME OVER",7,200);}	// If dead, display the "Game Over" overlay
-}
-
-
-		</script>
 	</head>
 	<body onload="DrawHead(); drawShape();">
-		<h1 style="text-align:center;"> Z island by DrJW</h1>
-		<div style="border-top: solid 1px black"></div>
+		<br><br><br><br><div style="width: 500px; margin: auto; border: 1px solid black;">
 		<a href='#' onclick='location.reload(true); return false;'>
-		<canvas id="canvas1" width="500px" height="50px"  style="display:block; margin-left:auto; margin-right:auto;" ></canvas><br></a>
+		<canvas id="canvas1" width="500px" height="50px"  style="display:block; margin-left:auto; margin-right:auto;" ></canvas></a>
 		<canvas id="canvas2" width="500px" height="300px" style="display:block; margin-left:auto; margin-right:auto;" ></canvas><br>
 
 		<table align="center"><tr><td>
@@ -177,9 +28,158 @@ if(PosY[0]<20) {PosY[0]=270; TheY--;	ReloadZombies();	Switch=1;}									// If p
 				</tr>
 			</table>
 		</td>
-		<td>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; </td><td>
-		<form>Zombies :<select id="ZOM" size=\"1\"><option>3</option> <option>4</option> <option>5</option> <option>6</option>  </select></form>  <input type=button style="background-color:orange" value="Validate" onclick="GetInput(); ">
-		</td></tr></table>
+		<td>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</td>
+		<td>Zombies: <select autocomplete="off" id="NBZ"><option>3</option> <option>4</option> <option>5</option> <option>6</option> </select></td>
+		</tr></table><br><br></div>
+	</body> 
 
-</body> 
+	<script>
+		var d=0;									// Is the player dead? (Game Over overlay trigger)
+		var TheX=0;									// Position of the current field of view on the overall map from left (0) to right (2)
+		var TheY=0;									// Position of the current field of view on the overall map from top (0) to bottom (2)
+		var StX=[];									// Array to store X coordinates of shelter structures	
+		var StY=[];  								// Array to store Y coordinates of shelter structures	
+		var Lx=[];									// ???
+		var Ly=[];									// ???
+		var Switch=1;								// ???
+		var ZOM=3;									// Number of zombies
+
+		addEventListener("keydown", (key) => {		// Key press events
+			if(key.keyCode == 37 ){left();}			// Left
+			if(key.keyCode == 38 ){up();}			// Up
+			if(key.keyCode == 39 ){right();}		// Right
+			if(key.keyCode == 40 ){down();}			// Down
+		});
+			
+		document.getElementById('NBZ').addEventListener("change", (e) => {ZOM=e.target.value;});		// Update number of zombies on user selection
+		document.getElementById('NBZ').addEventListener('keydown', function(e) {if(e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {e.preventDefault();}});	// Prevent arrow keys from changing number of zombies
+
+		const minX=10;																					// Lower limit for zombies movements on the X axis
+		const maxX=490;																					// Upper limit for zombies movements on the X axis
+		const minY=10;																					// Lower limit for zombies movements on the Y axis
+		const maxY=290;																					// Upper limit for zombies movements on the Y axis
+
+		var PosX=[];	var PosY=[];	var DirX=[];	var DirY=[];	var Vits=[];					// Character (0) and Zombies (1 to 6) positions
+		PosX[0]=60;		PosY[0]=60;		DirX[0]=0;		DirY[0]=0;		Vits[0]=0;
+		PosX[1]=200;	PosY[1]=200;	DirX[1]=1;		DirY[1]=1;		Vits[1]=1;
+		PosX[2]=200;	PosY[2]=200;	DirX[2]=1;		DirY[2]=1;		Vits[2]=1;
+		PosX[3]=200;	PosY[3]=200;	DirX[3]=1;		DirY[3]=1;		Vits[3]=1;
+		PosX[4]=200;	PosY[4]=200;	DirX[4]=1;		DirY[4]=1;		Vits[4]=1;
+		PosX[5]=200;	PosY[5]=200;	DirX[5]=1;		DirY[5]=1;		Vits[5]=1;
+		PosX[6]=200;	PosY[6]=200;	DirX[6]=1;		DirY[6]=1;		Vits[6]=1;
+
+		function Rectangle(c,x,y,l,h)		{c.fillRect (x,y,l,h);}
+		function Clean(c) 					{c.fillStyle = "white";	c.fillRect (0, 0, 500, 300);}
+		function GreenSetup(c) 				{c.fillStyle = "ForestGreen";	c.fillRect (0, 0, 500, 300);}
+		function BlueSetup(c) 				{c.fillStyle = "LightSkyBlue";	c.fillRect (0, 0, 500, 300);}
+		function YellowSetup(c) 			{c.fillStyle = "Moccasin";		c.fillRect (0, 0, 500, 300);}
+		function Cercle(c,x,y,r) 			{c.beginPath();	c.arc(x, y, r, 0, Math.PI*2, true);	c.closePath(); c.fill();}
+		function Trait(c,x1,y1,x2,y2,col) 	{c.beginPath(); c.moveTo(x1,y1);	c.lineTo(x2,y2);  c.strokeStyle = col;	c.stroke();}	
+		function DontFuckingTouchMe()		{d=0; for(i=1;i<=ZOM;i++){if(Dist(i,0)<20){d=1;}}}																// Check distance with each zombie to know if player dies
+		function Dist(a,b)					{return Dista=Math.round(Math.sqrt((PosX[a]-PosX[b])*(PosX[a]-PosX[b])+(PosY[a]-PosY[b])*(PosY[a]-PosY[b])));}	// Math function to compute distance between two points
+		function up()						{if(CheckColor(PosX[0],PosY[0]-13)!=765){PosY[0]-=2;}}
+		function down()						{if(CheckColor(PosX[0],PosY[0]+7)!=765) {PosY[0]+=2;}}
+		function left()						{if(CheckColor(PosX[0]-10,PosY[0])!=765){PosX[0]-=2;}}
+		function right()					{if(CheckColor(PosX[0]+10,PosY[0])!=765){PosX[0]+=2;}}
+		function ReloadZombies()			{for(n=1;n<=ZOM;n++){PosX[n]=200; PosY[n]=200;}}
+		
+		function CheckColor(x,y){  
+			var imgd = ctx2.getImageData(x, y, 1, 1);
+			var pix = imgd.data;
+			   pix[0] = 255 - pix[0]; // red
+			   pix[1] = 255 - pix[1]; // green
+			   pix[2] = 255 - pix[2]; // blue
+			   return total=pix[0]+pix[1]+pix[2];
+		}
+		
+		function Structures(){ 																			// Generate random shelter structures locations
+			for(n=1;n<4;n++){
+			if(Math.random()>0.5){LorL=1;} else{LorL=0;}												// Random determination if the structure is vertical or horizontal
+			Long=50;
+			StX[n]=Math.round(Math.random()*400+50);
+			StY[n]=Math.round(Math.random()*200+50);
+			if(LorL==1){Lx[n]=Long;}  else{Lx[n]=5;}
+			if(LorL==0){Ly[n]=Long;}  else{Ly[n]=5;}
+		}}
+		
+		function BuildStructures(){																		// Build shelter structures		
+			ctx2.fillStyle ="black"; Rectangle(ctx2,StX[1],StY[1],Lx[1],Ly[1]);							// Draw first shelter structure
+			ctx2.fillStyle ="black"; Rectangle(ctx2,StX[2],StY[2],Lx[2],Ly[2]);							// Draw second shelter structure
+			ctx2.fillStyle ="black"; Rectangle(ctx2,StX[3],StY[3],Lx[3],Ly[3]);							// Draw third shelter structure
+		}
+
+		function DrawC(C,X,Y){																			// Draw main character
+			C.fillStyle ="black";   Cercle(C,X,Y-7.5,5);												// Head
+			C.lineWidth = 2;																			// Limbs thickness
+			Trait(C,X,Y-5,X+10,Y+5,"black");															// Right arm
+			Trait(C,X,Y-5,X-10,Y+5,"black");															// left arm
+			Trait(C,X,Y+5,X+5,Y+10,"black");															// Right leg
+			Trait(C,X,Y+5,X-5,Y+10,"black");															// Left leg
+			C.lineWidth = 4; Trait(C,X,Y-5,X,Y+5,"black");												// Torso
+		}
+
+		function DrawZ(C,X,Y,f){																		// Draw zombie
+			C.fillStyle ="red";   Cercle(C,X-(4*f),Y-7.5,4);											// Head
+			C.lineWidth =2;																				// Limbs thickness
+			Trait(C,X-(4*f),Y-5,X+(10*f),Y-3,"red");													// Top arm
+			Trait(C,X-(4*f),Y-1,X+(10*f),Y+1,"red");													// Bottom arm
+			Trait(C,X-(4*f),Y+3,X-(6*f),Y+10,"red");													// Back leg
+			Trait(C,X-(4*f),Y+3,X+0,Y+10,"red");														// Front leg
+			C.lineWidth = 4; Trait(C,X-(4*f),Y-5,X-(4*f),Y+3,"red");									// Torso
+		}
+
+		function DrawHead(){																			// Draw header banner
+			ctx1 = document.getElementById('canvas1').getContext('2d');									// Select canvas
+			ctx1.fillStyle ="dimgray";  Rectangle(ctx1,0,0,500,50);										// Draw dark grey background
+			ctx1.fillStyle ="orange";																	// Writing color
+			ctx1.font="1.8em Helvetica";																// Font size
+			ctx1.fillText("Z island by Dr.JW (v0.96)",10,35);											// Header banner text with version number
+			DrawC(ctx1,400,30);																			// Draw decorative character
+			DrawZ(ctx1,450,30,-1);																		// Draw decorative zombie
+		}
+
+		function drawShape(){  
+			ctx2 = document.getElementById('canvas2').getContext('2d');									// Select canvas 
+			Clean(ctx2);																				// Clear canvas
+
+			if(TheY==0){																				// If field of view is at the top
+				YellowSetup(ctx2);																		// Make background yellow
+				ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,500,20);									// Draw the top wall
+			}
+
+			if(TheY==1){GreenSetup(ctx2);}																// If field of view is in the middle, make background green
+
+			if(TheY==2){																				// If field of view is at the bottom
+				BlueSetup(ctx2);																		// Make background blue
+				ctx2.fillStyle ="black"; Rectangle(ctx2,0,280,500,20);									// Draw the bottom wall
+			}
+
+			if(TheX==0){ctx2.fillStyle ="black"; Rectangle(ctx2,0,0,20,300);}							// If field of view is on the left, draw left wall
+			if(TheX==2){ctx2.fillStyle ="black"; Rectangle(ctx2,480,0,20,300);}							// If field of view is on the right, draw right wall
+
+			if(Switch==1){Structures(); Switch=0;}	BuildStructures();									// Call function to build shelter structures, and generate new ones if new field of view 
+
+			if(PosX[0]>480){PosX[0]=30;  TheX++;	ReloadZombies();	Switch=1;}						// If player goes off-screen to the right, switch field of view, reload zombies, request new shelter structures
+			if(PosY[0]>280){PosY[0]=30;	 TheY++;	ReloadZombies();	Switch=1;}						// If player goes off-screen at the bottom, switch field of view, reload zombies, request new shelter structures
+			if(PosX[0]<20) {PosX[0]=470; TheX--;	ReloadZombies();	Switch=1;}						// If player goes off-screen to the left, switch field of view, reload zombies, request new shelter structures
+			if(PosY[0]<20) {PosY[0]=270; TheY--;	ReloadZombies();	Switch=1;}						// If player goes off-screen at the top, switch field of view, reload zombies, request new shelter structures
+
+			DrawC(ctx2,PosX[0],PosY[0]);																// Call to draw character
+
+			for(i=1;i<=ZOM;i++){ 																		// For each zombie, movement management and drawing
+				if(Math.random()>0.99){DirX[i]=DirX[i]*-1;}												// 1% chance that the zombie changes horizontal direction  
+				if(Math.random()>0.99){DirY[i]=DirY[i]*-1;}												// 1% chance that the zombie changes vertical direction
+				if(PosX[i]>maxX){DirX[i]=-1;} 	if(PosX[i]<minX){DirX[i]=1;} 							// If zombie reaches the right or left of the field of view, change horizontal direction
+				if(PosY[i]>maxY){DirY[i]=-1;} 	if(PosY[i]<minY){DirY[i]=1;}							// If zombie reaches the top or bottom of the field of view, change vertical direction
+				if(CheckColor(PosX[i]+DirX[i]+(DirX[i]*5),PosY[i])!=765){PosX[i]=PosX[i]+DirX[i];}		// Move horizontally, if there is no wall on the way   
+				if(CheckColor(PosX[i],PosY[i]+DirY[i]+(DirY[i]*5))!=765){PosY[i]=PosY[i]+DirY[i];}		// Move vertically, if there is no wall on the way
+				DrawZ(ctx2,PosX[i],PosY[i],DirX[i]);													// Call to draw zombie
+			}
+
+			DontFuckingTouchMe();																		// Call function to check if the player is touched by a zombie
+			if(d==0) {requestAnimationFrame(drawShape);}												// If not dead, continue the animation
+			else{ctx2.fillStyle="orange"; ctx2.font="5em Helvetica"; ctx2.fillText("GAME OVER",7,200);}	// If dead, display the "Game Over" overlay
+		}
+
+	</script>
 </html>
