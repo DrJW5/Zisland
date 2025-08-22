@@ -2,34 +2,37 @@
 <html>
 	<head>	
 		<title>Z island</title>
+		<style>button 	{height:40px; width:40px; background-color:white; border:2px solid black}</style>
 	</head>
 	<body onload="DrawHead(); drawShape();">
 		<br><br><br><br><div style="width: 500px; margin: auto; border: 1px solid black;">
 		<a href='#' onclick='location.reload(true); return false;'>
 		<canvas id="canvas1" width="500px" height="50px"  style="display:block; margin-left:auto; margin-right:auto;" ></canvas></a>
 		<canvas id="canvas2" width="500px" height="300px" style="display:block; margin-left:auto; margin-right:auto;" ></canvas><br>
-
 		<table align="center"><tr><td>
 			<table>
 				<tr>
 					<td></td>
-					<td><input type=button value="^" id="kup" onclick="up()" style="height:40px; width:40px; background-color:white; border:2px solid black"></td>
+					<td><button onmouseover="AU=1" onmouseout="AU=0; cpt=0;">^</button></td>
 					<td></td>
 				</tr>
 				<tr>
-					<td><input type=button value="<" id="kleft" onclick="left()" style="height:40px; width:40px; background-color:white; border:2px solid black"></td>
+					<td><button onmouseover="AL=1" onmouseout="AL=0; cpt=0;"><</button></td>
 					<td></td>
-					<td><input type=button value=">" id="kright" onclick="right()" style="height:40px; width:40px; background-color:white; border:2px solid black"></td>
+					<td><button onmouseover="AR=1" onmouseout="AR=0; cpt=0;">></button></td>
 				</tr>
 				<tr>
 					<td></td>
-					<td><input type=button value="v" id="kdown" onclick="down()" style="height:40px; width:40px; background-color:white; border:2px solid black"></td>
+					<td><button onmouseover="AD=1" onmouseout="AD=0; cpt=0;">v</button></td>
 					<td></td>
 				</tr>
 			</table>
 		</td>
 		<td>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</td>
-		<td>Zombies: <select autocomplete="off" id="NBZ"><option>3</option> <option>4</option> <option>5</option> <option>6</option> </select></td>
+		<td>
+			Zombies: <select autocomplete="off" id="NBZ"><option>3</option> <option>4</option> <option>5</option> <option>6</option> </select><br>
+			Character's speed: <select autocomplete="off" id="CHS"><option>1</option> <option selected>2</option> <option>3</option> </select>
+		</td>
 		</tr></table><br><br></div>
 	</body> 
 
@@ -39,20 +42,34 @@
 		var TheY=0;									// Position of the current field of view on the overall map from top (0) to bottom (2)
 		var StX=[];									// Array to store X coordinates of shelter structures	
 		var StY=[];  								// Array to store Y coordinates of shelter structures	
-		var Lx=[];									// ???
-		var Ly=[];									// ???
-		var Switch=1;								// ???
+		var Lx=[];									// Lenght of structures on horizontal axis
+		var Ly=[];									// Lenght of structures on vertical axis
+		var Switch=1;								// Did we just change the field of view?
 		var ZOM=3;									// Number of zombies
+		var AU=0;									// Is the mouse over the "up" button or the "up" key active? 
+		var AD=0; 									// Is the mouse over the "down" button or the "down" key active? 
+		var AL=0; 									// Is the mouse over the "left" button or the "left" key active? 
+		var AR=0;									// Is the mouse over the "right" button or the "right" key active? 
+		var cpt=0;									// Counter to slow down repeated action of buttons (time buffer)
 
 		addEventListener("keydown", (key) => {		// Key press events
-			if(key.keyCode == 37 ){left();}			// Left
-			if(key.keyCode == 38 ){up();}			// Up
-			if(key.keyCode == 39 ){right();}		// Right
-			if(key.keyCode == 40 ){down();}			// Down
+			if(key.keyCode == 37 ){AL=1;}			// Left
+			if(key.keyCode == 38 ){AU=1;}			// Up
+			if(key.keyCode == 39 ){AR=1;}			// Right
+			if(key.keyCode == 40 ){AD=1;}			// Down
+		});
+		
+		addEventListener("keyup", (key) => {		// Key release events
+			if(key.keyCode == 37 ){AL=0;}			// End of left
+			if(key.keyCode == 38 ){AU=0;}			// End of up
+			if(key.keyCode == 39 ){AR=0;}			// End of right
+			if(key.keyCode == 40 ){AD=0;}			// End of down
 		});
 			
-		document.getElementById('NBZ').addEventListener("change", (e) => {ZOM=e.target.value;});		// Update number of zombies on user selection
+		document.getElementById('NBZ').addEventListener("change", (e) => {ZOM=e.target.value;});																					// Update number of zombies on user selection
+		document.getElementById('CHS').addEventListener("change", (e) => {Vits[0]=e.target.value; AU=0; AD=0; AL=0; AR=0; cpt=0;});													// Update character's speed on user selection
 		document.getElementById('NBZ').addEventListener('keydown', function(e) {if(e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {e.preventDefault();}});	// Prevent arrow keys from changing number of zombies
+		document.getElementById('CHS').addEventListener('keydown', function(e) {if(e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {e.preventDefault();}});	// Prevent arrow keys from changing character's speed
 
 		const minX=10;																					// Lower limit for zombies movements on the X axis
 		const maxX=490;																					// Upper limit for zombies movements on the X axis
@@ -60,13 +77,8 @@
 		const maxY=290;																					// Upper limit for zombies movements on the Y axis
 
 		var PosX=[];	var PosY=[];	var DirX=[];	var DirY=[];	var Vits=[];					// Character (0) and Zombies (1 to 6) positions
-		PosX[0]=60;		PosY[0]=60;		DirX[0]=0;		DirY[0]=0;		Vits[0]=0;
-		PosX[1]=200;	PosY[1]=200;	DirX[1]=1;		DirY[1]=1;		Vits[1]=1;
-		PosX[2]=200;	PosY[2]=200;	DirX[2]=1;		DirY[2]=1;		Vits[2]=1;
-		PosX[3]=200;	PosY[3]=200;	DirX[3]=1;		DirY[3]=1;		Vits[3]=1;
-		PosX[4]=200;	PosY[4]=200;	DirX[4]=1;		DirY[4]=1;		Vits[4]=1;
-		PosX[5]=200;	PosY[5]=200;	DirX[5]=1;		DirY[5]=1;		Vits[5]=1;
-		PosX[6]=200;	PosY[6]=200;	DirX[6]=1;		DirY[6]=1;		Vits[6]=1;
+		PosX[0]=60;		PosY[0]=60;		DirX[0]=0;		DirY[0]=0;		Vits[0]=2;						// Character position data
+		for(j=1;j<7;j++){PosX[j]=200; PosY[j]=200; DirX[j]=1; DirY[j]=1; Vits[j]=1;}					// Zombies position data
 
 		function Rectangle(c,x,y,l,h)		{c.fillRect (x,y,l,h);}
 		function Clean(c) 					{c.fillStyle = "white";	c.fillRect (0, 0, 500, 300);}
@@ -93,14 +105,14 @@
 		}
 		
 		function Structures(){ 																			// Generate random shelter structures locations
-			for(n=1;n<4;n++){
-			if(Math.random()>0.5){LorL=1;} else{LorL=0;}												// Random determination if the structure is vertical or horizontal
-			Long=50;
-			StX[n]=Math.round(Math.random()*400+50);
-			StY[n]=Math.round(Math.random()*200+50);
-			if(LorL==1){Lx[n]=Long;}  else{Lx[n]=5;}
-			if(LorL==0){Ly[n]=Long;}  else{Ly[n]=5;}
-		}}
+			for(n=1;n<4;n++){																			// Number of structures, is 3
+				if(Math.random()>0.5){LorL=1;} else{LorL=0;}											// Random determination of structure orientation (vertical or horizontal)
+				StX[n]=Math.round(Math.random()*400+50);												// Random determination of structure starting point (X axis)
+				StY[n]=Math.round(Math.random()*200+50);												// Random determination of structure starting point (Y axis)
+				if(LorL==1){Lx[n]=50;}  else{Lx[n]=5;}													// If structure is horizontal, lenght on X is 50, else it is 5
+				if(LorL==0){Ly[n]=50;}  else{Ly[n]=5;}													// If structure is vertical, lenght on Y is 50, else it is 5
+			}
+		}
 		
 		function BuildStructures(){																		// Build shelter structures		
 			ctx2.fillStyle ="black"; Rectangle(ctx2,StX[1],StY[1],Lx[1],Ly[1]);							// Draw first shelter structure
@@ -133,7 +145,7 @@
 			ctx1.fillStyle ="dimgray";  Rectangle(ctx1,0,0,500,50);										// Draw dark grey background
 			ctx1.fillStyle ="orange";																	// Writing color
 			ctx1.font="1.8em Helvetica";																// Font size
-			ctx1.fillText("Z island by Dr.JW (v0.96)",10,35);											// Header banner text with version number
+			ctx1.fillText("Z island by Dr.JW (v0.97)",10,35);											// Header banner text with version number
 			DrawC(ctx1,400,30);																			// Draw decorative character
 			DrawZ(ctx1,450,30,-1);																		// Draw decorative zombie
 		}
@@ -165,6 +177,10 @@
 			if(PosY[0]<20) {PosY[0]=270; TheY--;	ReloadZombies();	Switch=1;}						// If player goes off-screen at the top, switch field of view, reload zombies, request new shelter structures
 
 			DrawC(ctx2,PosX[0],PosY[0]);																// Call to draw character
+			if(AU==1){if(cpt==0){up();} 		cpt++; if(cpt>=4-Vits[0]){cpt=0;}}						// If button or key is active, go up
+			else if(AD==1){if(cpt==0){down();} 	cpt++; if(cpt>=4-Vits[0]){cpt=0;}}						// If button or key is active, go down
+			else if(AL==1){if(cpt==0){left();} 	cpt++; if(cpt>=4-Vits[0]){cpt=0;}}						// If button or key is active, go left
+			else if(AR==1){if(cpt==0){right();} cpt++; if(cpt>=4-Vits[0]){cpt=0;}}						// If button or key is active, go right
 
 			for(i=1;i<=ZOM;i++){ 																		// For each zombie, movement management and drawing
 				if(Math.random()>0.99){DirX[i]=DirX[i]*-1;}												// 1% chance that the zombie changes horizontal direction  
