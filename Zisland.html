@@ -96,11 +96,11 @@
 		function right()					{if(CheckColor(PosX[0]+10,PosY[0])!=765){PosX[0]+=2;}}
 		function ReloadZombies()			{for(n=1;n<=ZOM;n++){PosX[n]=200; PosY[n]=200;}}
 		
-		function PointerPress(){																											// Making gamepad direction keys active only when pressed
-			document.getElementById('PU').innerHTML="<button onpointerdown='AU=1' onpointerup='AU=0' onmouseleave='AU=0'>▲</button>";		// Up button
-			document.getElementById('PL').innerHTML="<button onpointerdown='AL=1' onpointerup='AL=0' onmouseleave='AU=0'>◀</button>";		// Left button
-			document.getElementById('PR').innerHTML="<button onpointerdown='AR=1' onpointerup='AR=0' onmouseleave='AU=0'>▶</button>";		// Right button
-			document.getElementById('PD').innerHTML="<button onpointerdown='AD=1' onpointerup='AD=0' onmouseleave='AU=0'>▼</button>";		// Down button
+		function PointerPress(){																																// Making gamepad direction keys active only when pressed
+			document.getElementById('PU').innerHTML="<button onpointerdown='AU=1' onpointerup='AU=0' onpointerleave='AU=0' onmouseleave='AU=0'>▲</button>";		// Up button
+			document.getElementById('PL').innerHTML="<button onpointerdown='AL=1' onpointerup='AL=0' onpointerleave='AL=0' onmouseleave='AL=0'>◀</button>";		// Left button
+			document.getElementById('PR').innerHTML="<button onpointerdown='AR=1' onpointerup='AR=0' onpointerleave='AR=0' onmouseleave='AR=0'>▶</button>";		// Right button
+			document.getElementById('PD').innerHTML="<button onpointerdown='AD=1' onpointerup='AD=0' onpointerleave='AD=0' onmouseleave='AD=0'>▼</button>";		// Down button
 		}
 
 		function PointerHover(){																						// Making gamepad direction keys active on hovering
@@ -214,4 +214,3 @@
 
 	</script>
 </html>
-
