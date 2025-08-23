@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>	
+		<meta name="viewport" content="width=device-width, initial-scale=0.7, maximum-scale=0.7, user-scalable=no" />
 		<title>Z island</title>
 		<style>
 			button 		{height:40px; width:40px; background-color:white; border:2px solid black}
@@ -9,34 +10,23 @@
 			canvas		{display:block; margin-left:auto; margin-right:auto;}
 		</style>
 	</head>
-	<body onload="DrawHead(); drawShape();">
+	<body onload="DrawHead(); drawShape(); PointerPress();">
 		<br><br><br><br><div class="gamepad">
 		<a href='#' onclick='location.reload(true); return false;'>
 		<canvas id='canvas1' width=500px height=50px"></canvas></a>
 		<canvas id='canvas2' width=500px height=300px"></canvas><br>
 		<table align="center"><tr><td>
 			<table>
-				<tr>
-					<td></td>
-					<td><button onmouseover="AU=1" onmouseleave="AU=0;">^</button></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><button onmouseover="AL=1" onmouseleave="AL=0;"><</button></td>
-					<td></td>
-					<td><button onmouseover="AR=1" onmouseleave="AR=0;">></button></td>
-				</tr>
-				<tr>
-					<td></td>
-					<td><button onmouseover="AD=1" onmouseleave="AD=0;">v</button></td>
-					<td></td>
-				</tr>
+				<tr><td></td><td><span id="PU"></span></td><td></td></tr>
+				<tr><td><span id="PL"></span></td><td></td><td><span id="PR"></span></td></tr>
+				<tr><td></td><td><span id="PD"></span></td><td></td></tr>
 			</table>
 		</td>
 		<td>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</td>
 		<td>
 			Zombies: <select autocomplete="off" id="NBZ"><option>3</option> <option>4</option> <option>5</option> <option>6</option> </select><br>
-			Character's speed: <select autocomplete="off" id="CHS"><option>1</option> <option selected>2</option> <option>3</option> </select>
+			Character's speed: <select autocomplete="off" id="CHS"><option>1</option> <option selected>2</option> <option>3</option> </select><br>
+			Pad behavior: <select autocomplete="off" id="PDB"><option selected>press</option> <option >hover</option> </select>
 		</td>
 		</tr></table><br><br></div>
 	</body> 
@@ -73,8 +63,10 @@
 			
 		document.getElementById('NBZ').addEventListener("change", (e) => {ZOM=e.target.value;});																					// Update number of zombies on user selection
 		document.getElementById('CHS').addEventListener("change", (e) => {Vits[0]=e.target.value; AU=0; AD=0; AL=0; AR=0; cpt=0;});													// Update character's speed on user selection
+		document.getElementById('PDB').addEventListener("change", (e) => {if(e.target.value=="press"){PointerPress();}  if(e.target.value=="hover"){PointerHover();}  });			// Update gamepad direction keys behavior on user selection
 		document.getElementById('NBZ').addEventListener('keydown', function(e) {if(e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {e.preventDefault();}});	// Prevent arrow keys from changing number of zombies
 		document.getElementById('CHS').addEventListener('keydown', function(e) {if(e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {e.preventDefault();}});	// Prevent arrow keys from changing character's speed
+		document.getElementById('PDB').addEventListener('keydown', function(e) {if(e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {e.preventDefault();}});	// Prevent arrow keys from changing gamepad's behavior
 
 		const minX=10;																					// Lower limit for zombies movements on the X axis
 		const maxX=490;																					// Upper limit for zombies movements on the X axis
@@ -99,6 +91,20 @@
 		function left()						{if(CheckColor(PosX[0]-10,PosY[0])!=765){PosX[0]-=2;}}
 		function right()					{if(CheckColor(PosX[0]+10,PosY[0])!=765){PosX[0]+=2;}}
 		function ReloadZombies()			{for(n=1;n<=ZOM;n++){PosX[n]=200; PosY[n]=200;}}
+		
+		function PointerPress(){																						// Making gamepad direction keys active only when pressed
+			document.getElementById('PU').innerHTML="<button onpointerdown='AU=1' onpointerup='AU=0'>^</button>";		// Up button
+			document.getElementById('PL').innerHTML="<button onpointerdown='AL=1' onpointerup='AL=0'><</button>";		// Left button
+			document.getElementById('PR').innerHTML="<button onpointerdown='AR=1' onpointerup='AR=0'>></button>";		// Right button
+			document.getElementById('PD').innerHTML="<button onpointerdown='AD=1' onpointerup='AD=0'>v</button>";		// Down button
+		}
+
+		function PointerHover(){																						// Making gamepad direction keys active on hovering
+			document.getElementById('PU').innerHTML="<button onmouseover='AU=1' onmouseleave='AU=0'>^</button>";		// Up button
+			document.getElementById('PL').innerHTML="<button onmouseover='AL=1' onmouseleave='AL=0'><</button>";		// Left button
+			document.getElementById('PR').innerHTML="<button onmouseover='AR=1' onmouseleave='AR=0'>></button>";		// Right button
+			document.getElementById('PD').innerHTML="<button onmouseover='AD=1' onmouseleave='AD=0'>v</button>";		// Down button
+		}
 		
 		function CheckColor(x,y){  
 			var imgd = ctx2.getImageData(x, y, 1, 1);
@@ -150,7 +156,7 @@
 			ctx1.fillStyle ="dimgray";  Rectangle(ctx1,0,0,500,50);										// Draw dark grey background
 			ctx1.fillStyle ="orange";																	// Writing color
 			ctx1.font="1.8em Helvetica";																// Font size
-			ctx1.fillText("Z island by Dr.JW (v0.98)",10,35);											// Header banner text with version number
+			ctx1.fillText("Z island by Dr.JW (v0.99)",10,35);											// Header banner text with version number
 			DrawC(ctx1,400,30);																			// Draw decorative character
 			DrawZ(ctx1,450,30,-1);																		// Draw decorative zombie
 		}
