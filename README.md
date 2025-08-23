@@ -1,4 +1,5 @@
 Try to escape the zombies! 
+
 HTML/JavaScript game I coded in 2015 and greatly improved in 2025. 
 
 You control a character and must help him escape the zombies roaming around.
